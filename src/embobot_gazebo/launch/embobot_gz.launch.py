@@ -4,7 +4,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument, IncludeLaunchDescription,
-    TimerAction, ExecuteProcess,
+    TimerAction,
 )
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import (
@@ -117,10 +117,14 @@ def generate_launch_description():
     start_jsb = TimerAction(
         period=7.0,
         actions=[
-            ExecuteProcess(
-                cmd=['ros2', 'control', 'load_controller',
-                     '--set-state', 'active',
-                     'joint_state_broadcaster'],
+            Node(
+                package='controller_manager',
+                executable='spawner',
+                arguments=[
+                    'joint_state_broadcaster',
+                    '--controller-manager', '/controller_manager',
+                    '--controller-manager-timeout', '20',
+                ],
                 output='screen',
             ),
         ],
@@ -128,10 +132,14 @@ def generate_launch_description():
     start_ddc = TimerAction(
         period=8.0,
         actions=[
-            ExecuteProcess(
-                cmd=['ros2', 'control', 'load_controller',
-                     '--set-state', 'active',
-                     'diff_drive_controller'],
+            Node(
+                package='controller_manager',
+                executable='spawner',
+                arguments=[
+                    'diff_drive_controller',
+                    '--controller-manager', '/controller_manager',
+                    '--controller-manager-timeout', '20',
+                ],
                 output='screen',
             ),
         ],
