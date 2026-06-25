@@ -38,7 +38,8 @@
 
   <!-- ④  激光雷达传感器插件（Gazebo Harmonic 语法）-->
   <gazebo reference="lidar_link">
-    <sensor name="lidar_sensor" type="lidar">
+    <sensor name="lidar_sensor" type="gpu_lidar">
+      <always_on>1</always_on>
       <topic>/scan</topic>
       <update_rate>10</update_rate>
       <lidar>

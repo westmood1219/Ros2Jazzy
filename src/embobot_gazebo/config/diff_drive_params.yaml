@@ -1,0 +1,14 @@
+diff_drive_controller:
+  ros__parameters:
+    left_wheel_names: ['left_wheel_joint']
+    right_wheel_names: ['right_wheel_joint']
+    wheel_separation: 0.160
+    wheel_radius: 0.033
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+    enable_odom_tf: true
+    use_stamped_vel: false
+    linear.x.max_velocity: 0.5
+    linear.x.min_velocity: -0.5
+    angular.z.max_velocity: 2.0
+    angular.z.min_velocity: -2.0
