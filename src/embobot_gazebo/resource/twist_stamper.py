@@ -7,12 +7,12 @@ from nav_msgs.msg import Odometry
 class TwistStamper(Node):
     def __init__(self):
         super().__init__('twist_stamper')
-        # Twist → TwistStamped for Jazzy's diff_drive_controller
-        self.sub = self.create_subscription(Twist, '/cmd_vel', self.cb, 10)
+        self.set_parameters([rclpy.parameter.Parameter('use_sim_time', rclpy.Parameter.Type.BOOL, True)])
+        # 先创建 publisher，再创建 subscriber
         self.pub = self.create_publisher(TwistStamped, '/diff_drive_controller/cmd_vel', 10)
-        # /diff_drive_controller/odom → /odom relay
-        self.odom_sub = self.create_subscription(Odometry, '/diff_drive_controller/odom', self.odom_cb, 10)
         self.odom_pub = self.create_publisher(Odometry, '/odom', 10)
+        self.sub = self.create_subscription(Twist, '/cmd_vel', self.cb, 10)
+        self.odom_sub = self.create_subscription(Odometry, '/diff_drive_controller/odom', self.odom_cb, 10)
 
     def cb(self, msg):
         ts = TwistStamped()

@@ -112,18 +112,19 @@ Visualization Manager:
       Show Names: true
       Tree:
         odom:
-          base_link:
-            camera_link:
-              camera_optical_frame:
+          base_footprint:
+            base_link:
+              camera_link:
+                camera_optical_frame:
+                  {}
+              caster_link:
                 {}
-            caster_link:
-              {}
-            left_wheel_link:
-              {}
-            lidar_link:
-              {}
-            right_wheel_link:
-              {}
+              left_wheel_link:
+                {}
+              lidar_link:
+                {}
+              right_wheel_link:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 1
