@@ -38,3 +38,7 @@ venv/
 
 # OS
 Thumbs.db
+
+# Generated files
+*.gv
+*.pdf

@@ -22,6 +22,10 @@ diff_drive_controller:
     # 话题配置
     use_stamped_vel: false
 
+    # 明确设置 TF 坐标系（Jazzy 默认 base_frame_id 是 base_link 不是 base_footprint）
+    base_frame_id: base_footprint
+    odom_frame_id: odom
+
     # 速度和加速度限制
     linear.x.max_velocity:  0.5
     linear.x.min_velocity: -0.5

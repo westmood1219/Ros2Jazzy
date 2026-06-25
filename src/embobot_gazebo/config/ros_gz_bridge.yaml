@@ -25,6 +25,7 @@
   gz_type_name: gz.msgs.Model
   direction: GZ_TO_ROS
 
+# lidar sensor: <topic>/scan</topic> → Gazebo 绝对话题 /scan
 - ros_topic_name: /scan
   gz_topic_name: /scan
   ros_type_name: sensor_msgs/msg/LaserScan
