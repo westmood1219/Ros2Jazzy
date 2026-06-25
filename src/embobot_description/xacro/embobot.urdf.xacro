@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<robot name="embobot" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 命令行参数：ros2 launch ... use_sim:=true/false -->
+  <xacro:arg name="use_sim" default="true"/>
+
+  <!-- 颜色材质定义（URDF 部分用，Gazebo 用自己的） -->
+  <material name="dark_gray"><color rgba="0.15 0.15 0.15 1.0"/></material>
+  <material name="black"><color rgba="0.05 0.05 0.05 1.0"/></material>
+  <material name="dark_blue"><color rgba="0.1 0.1 0.4 1.0"/></material>
+  <material name="light_gray"><color rgba="0.7 0.7 0.7 1.0"/></material>
+
+  <!-- 引入所有子模块（顺序很重要：macros 必须第一个） -->
+  <xacro:include filename="$(find embobot_description)/xacro/macros.xacro"/>
+  <xacro:include filename="$(find embobot_description)/xacro/base.xacro"/>
+  <xacro:include filename="$(find embobot_description)/xacro/wheels.xacro"/>
+  <xacro:include filename="$(find embobot_description)/xacro/sensors.xacro"/>
+
+  <!-- Gazebo 和 ros2_control 标签只在仿真时才需要 -->
+  <xacro:if value="$(arg use_sim)">
+    <xacro:include filename="$(find embobot_description)/xacro/gazebo.xacro"/>
+    <xacro:include filename="$(find embobot_description)/xacro/ros2_control.xacro"/>
+  </xacro:if>
+
+</robot>

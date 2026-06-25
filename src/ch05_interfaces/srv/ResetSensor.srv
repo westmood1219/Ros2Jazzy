@@ -1,0 +1,9 @@
+# 传感器重置服务
+# Request
+string sensor_name    # 要重置的传感器名称（如 "lidar"、"camera"）
+bool   force_reset    # 是否强制重置（不等待空闲）
+---
+# Response
+bool   success        # 是否成功
+string message        # 描述信息
+float32 reset_time_ms # 实际重置耗时（毫秒）

@@ -1,0 +1,26 @@
+# ~/ros2_ws/pyproject.toml
+[project]
+name = "ros2-ws"
+version = "0.1.0"
+requires-python = ">=3.12"
+
+# ROS 2 核心包来自系统安装，不在这里声明
+# 以下是本书将用到的第三方包（按章节分组）
+dependencies = []
+
+[project.optional-dependencies]
+# 第18章：OpenCV 视觉处理
+vision = [
+    "opencv-python>=4.9",
+    "numpy>=1.26",
+]
+# 第19章：YOLO 目标检测（GPU 加速）
+yolo = [
+    "ultralytics>=8.2",
+    "torch>=2.3",
+    "torchvision>=0.18",
+]
+# 第23章：LLM 接入
+llm = [
+    "ollama>=0.2",
+]

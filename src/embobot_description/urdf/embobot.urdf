@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+<robot name="embobot">
+
+  <!-- ═══════════════════════════════════════
+       颜色材质定义（可在各 link 中引用）
+  ════════════════════════════════════════ -->
+  <material name="dark_gray">
+    <color rgba="0.15 0.15 0.15 1.0"/>
+  </material>
+  <material name="black">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+  <material name="dark_blue">
+    <color rgba="0.1 0.1 0.4 1.0"/>
+  </material>
+  <material name="light_gray">
+    <color rgba="0.7 0.7 0.7 1.0"/>
+  </material>
+
+  <!-- ═══════════════════════════════════════
+       base_footprint：虚拟根节点，贴地面
+       导航栈需要这个 link 来知道机器人的"足迹"
+  ════════════════════════════════════════ -->
+  <link name="base_footprint"/>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <!-- base_link 的原点在底盘中心，距地面一个轮子半径 -->
+    <origin xyz="0.0 0.0 0.033" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════
+       base_link：底盘主体（圆柱形）
+  ════════════════════════════════════════ -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.110" length="0.070"/>
+      </geometry>
+      <material name="dark_gray"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.110" length="0.070"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.5"/>
+      <!-- 实心圆柱：ixx=iyy=m*(3r²+h²)/12, izz=m*r²/2 -->
+      <inertia ixx="0.0133" ixy="0.0" ixz="0.0"
+               iyy="0.0133" iyz="0.0"
+               izz="0.0091"/>
+    </inertial>
+  </link>
+
+  <!-- ═══════════════════════════════════════
+       左驱动轮
+       位置：左侧（y=+0.080），高度与地面持平
+  ════════════════════════════════════════ -->
+  <link name="left_wheel_link">
+    <visual>
+      <!-- rpy="1.5708 0 0" 将圆柱从竖直转为水平（绕X轴旋转90°） -->
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.018"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.018"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <!-- 实心圆柱（水平轴）: ixx=izz=m*(3r²+h²)/12, iyy=m*r²/2 -->
+      <inertia ixx="0.0000583" ixy="0.0" ixz="0.0"
+               iyy="0.0000109" iyz="0.0"
+               izz="0.0000583"/>
+    </inertial>
+  </link>
+
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel_link"/>
+    <!-- 左轮：x=0（底盘中心前后方向居中），y=+0.080（左侧），z=-0.033 -->
+    <!-- z=-0.033 使轮子轴心与底盘轴心之间有合适的偏移，轮子底部贴地 -->
+    <origin xyz="0.0 0.080 -0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>  <!-- 绕 Y 轴旋转 -->
+  </joint>
+
+  <!-- ═══════════════════════════════════════
+       右驱动轮（与左轮对称）
+  ════════════════════════════════════════ -->
+  <link name="right_wheel_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.018"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="1.5708 0 0"/>
+      <geometry>
+        <cylinder radius="0.033" length="0.018"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.2"/>
+      <inertia ixx="0.0000583" ixy="0.0" ixz="0.0"
+               iyy="0.0000109" iyz="0.0"
+               izz="0.0000583"/>
+    </inertial>
+  </link>
+
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel_link"/>
+    <!-- 右轮：y=-0.080（右侧，负方向） -->
+    <origin xyz="0.0 -0.080 -0.0" rpy="0 0 0"/>
+    <axis xyz="0 1 0"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════
+       前向万向轮（caster wheel）
+       无动力，让机器人保持三点支撑稳定
+  ════════════════════════════════════════ -->
+  <link name="caster_link">
+    <visual>
+      <geometry>
+        <sphere radius="0.015"/>
+      </geometry>
+      <material name="light_gray"/>
+    </visual>
+    <collision>
+      <geometry>
+        <sphere radius="0.015"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <!-- 实心球：ixx=iyy=izz=2*m*r²/5 -->
+      <inertia ixx="0.000003" ixy="0.0" ixz="0.0"
+               iyy="0.000003" iyz="0.0"
+               izz="0.000003"/>
+    </inertial>
+  </link>
+
+  <joint name="caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="caster_link"/>
+    <!-- 万向轮在底盘前方，距中心0.080m，高度比轮子低，触地 -->
+    <origin xyz="0.080 0.0 -0.018" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════
+       激光雷达挂载（lidar_link）
+       实际的 LaserScan 数据帧绑定到此 link
+  ════════════════════════════════════════ -->
+  <link name="lidar_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <!-- 激光雷达本体：矮圆柱 -->
+        <cylinder radius="0.025" length="0.040"/>
+      </geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder radius="0.025" length="0.040"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.15"/>
+      <inertia ixx="0.0000180" ixy="0.0" ixz="0.0"
+               iyy="0.0000180" iyz="0.0"
+               izz="0.0000056"/>
+    </inertial>
+  </link>
+
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <!-- 激光雷达位于底盘顶部中心 -->
+    <!-- base_link 的原点在底盘中心，往上 0.035 到底盘顶面，再往上 0.020 到雷达中心 -->
+    <origin xyz="0.0 0.0 0.055" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════
+       摄像头挂载（camera_link）
+       朝前，挂在底盘前方
+  ════════════════════════════════════════ -->
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.030 0.050 0.025"/>
+      </geometry>
+      <material name="dark_blue"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.030 0.050 0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.05"/>
+      <!-- 均匀长方体：各轴惯量 m*(a²+b²)/12 -->
+      <inertia ixx="0.0000177" ixy="0.0" ixz="0.0"
+               iyy="0.0000052" iyz="0.0"
+               izz="0.0000219"/>
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <!-- 摄像头在底盘前方 0.100m，稍微偏上 -->
+    <origin xyz="0.100 0.0 0.010" rpy="0 0 0"/>
+  </joint>
+
+  <!-- ═══════════════════════════════════════
+       camera_optical_frame：ROS 图像坐标约定
+       标准相机坐标系：Z 轴向前，X 向右，Y 向下
+       和机器人坐标系（X 向前，Y 向左，Z 向上）不同
+  ════════════════════════════════════════ -->
+  <link name="camera_optical_frame"/>
+
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <!-- 旋转约定：绕 Z 轴 -90°，再绕 X 轴 -90° -->
+    <origin xyz="0 0 0" rpy="-1.5708 0 -1.5708"/>
+  </joint>
+
+</robot>

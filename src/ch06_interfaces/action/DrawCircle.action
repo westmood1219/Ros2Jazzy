@@ -1,0 +1,11 @@
+# Goal
+float32 radius
+float32 speed
+---
+# Result
+float32 total_distance
+bool    completed
+---
+# Feedback
+float32 percent_complete
+float32 distance_so_far

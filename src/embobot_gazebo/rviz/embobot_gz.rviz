@@ -1,0 +1,32 @@
+# rviz/embobot_gz.rviz
+Panels:
+  - Class: rviz_common/Displays
+    Name: Displays
+Visualization Manager:
+  Global Options:
+    Fixed Frame: odom
+  Displays:
+    - Class: rviz_default_plugins/RobotModel
+      Enabled: true
+      Name: Robot model
+      Description Topic:
+        Value: /robot_description
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Name: TF
+      Show Axes: true
+      Show Names: true
+      Marker Scale: 0.3
+    - Class: rviz_default_plugins/LaserScan
+      Enabled: true
+      Name: Laser scan
+      Topic:
+        Value: /scan
+      Size (m): 0.04
+      Color: 255; 50; 50
+    - Class: rviz_default_plugins/Odometry
+      Enabled: true
+      Name: Odometry trail
+      Topic:
+        Value: /odom
+      Keep: 100

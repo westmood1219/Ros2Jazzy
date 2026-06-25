@@ -1,0 +1,10 @@
+/battery_node:
+  ros__parameters:
+    crit_threshold: 5.0
+    discharge_rate: 5.0
+    enable_color: true
+    initial_level: 100.0
+    start_type_description_service: true
+    use_sim_time: false
+    warn_threshold: 20.0
+

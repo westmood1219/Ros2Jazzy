@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!--
+    ros2_control 标签定义"硬件接口"：
+    - 在仿真中：hardware plugin 是 GazeboSimSystem，直接读写 Gazebo 关节状态
+    - 在真实硬件中：hardware plugin 换成对应的驱动（如 Arduino、ROS 2 serial 驱动）
+    接口类型不变，只换 plugin 名，是 Sim2Real 移植的关键设计
+  -->
+  <ros2_control name="EmboBot" type="system">
+    <hardware>
+      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+    </hardware>
+
+    <!-- 左轮关节：只有速度接口（差速驱动不需要位置控制）-->
+    <joint name="left_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max"> 10</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+
+    <!-- 右轮关节 -->
+    <joint name="right_wheel_joint">
+      <command_interface name="velocity">
+        <param name="min">-10</param>
+        <param name="max"> 10</param>
+      </command_interface>
+      <state_interface name="position"/>
+      <state_interface name="velocity"/>
+    </joint>
+  </ros2_control>
+
+</robot>

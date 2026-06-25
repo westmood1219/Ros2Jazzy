@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ①  材质颜色（Gazebo 有自己的材质系统，不认 URDF 的 material）-->
+  <gazebo reference="base_link">
+    <material>Gazebo/DarkGrey</material>
+  </gazebo>
+  <gazebo reference="left_wheel_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="right_wheel_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+  <gazebo reference="lidar_link">
+    <material>Gazebo/Black</material>
+  </gazebo>
+
+  <!-- ②  万向轮摩擦力（设为极小，让它可以自由滑动）-->
+  <gazebo reference="caster_link">
+    <mu1>0.001</mu1>
+    <mu2>0.001</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
+
+  <!-- ③  驱动轮摩擦力（较大，保证抓地力）-->
+  <gazebo reference="left_wheel_link">
+    <mu1>1.0</mu1>
+    <mu2>0.5</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+  </gazebo>
+  <gazebo reference="right_wheel_link">
+    <mu1>1.0</mu1>
+    <mu2>0.5</mu2>
+    <kp>500000.0</kp>
+    <kd>10.0</kd>
+  </gazebo>
+
+  <!-- ④  激光雷达传感器插件（Gazebo Harmonic 语法）-->
+  <gazebo reference="lidar_link">
+    <sensor name="lidar_sensor" type="gpu_lidar">
+      <topic>/scan</topic>
+      <update_rate>10</update_rate>
+      <lidar>
+        <scan>
+          <horizontal>
+            <samples>360</samples>
+            <resolution>1</resolution>
+            <min_angle>${-pi}</min_angle>
+            <max_angle>${pi}</max_angle>
+          </horizontal>
+        </scan>
+        <range>
+          <min>0.120</min>
+          <max>3.5</max>
+          <resolution>0.015</resolution>
+        </range>
+      </lidar>
+      <gz_frame_id>lidar_link</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+  <!-- ⑤  gz_ros2_control 插件（Gazebo Harmonic 必须，替代旧的 libgazebo_ros2_control.so）-->
+  <gazebo>
+    <plugin filename="gz_ros2_control-system"
+            name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+      <parameters>$(find embobot_description)/config/embobot_controllers.yaml</parameters>
+    </plugin>
+  </gazebo>
+
+</robot>

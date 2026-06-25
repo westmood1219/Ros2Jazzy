@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 分别调用 wheel 宏，传入不同的 y_offset -->
+  <xacro:wheel name="left"  y_offset="${ track_width/2}"/>
+  <xacro:wheel name="right" y_offset="${-track_width/2}"/>
+
+</robot>

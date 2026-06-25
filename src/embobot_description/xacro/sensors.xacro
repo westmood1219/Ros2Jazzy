@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- 激光雷达 -->
+  <link name="lidar_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.025" length="0.040"/></geometry>
+      <material name="black"/>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry><cylinder radius="0.025" length="0.040"/></geometry>
+    </collision>
+    <xacro:cylinder_inertia m="0.15" r="0.025" h="0.040"/>
+  </link>
+  <joint name="lidar_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="lidar_link"/>
+    <origin xyz="0.0 0.0 ${base_height/2 + 0.020}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 摄像头 -->
+  <link name="camera_link">
+    <visual>
+      <geometry><box size="0.030 0.050 0.025"/></geometry>
+      <material name="dark_blue"/>
+    </visual>
+    <collision>
+      <geometry><box size="0.030 0.050 0.025"/></geometry>
+    </collision>
+    <xacro:box_inertia m="0.05" x="0.030" y="0.050" z="0.025"/>
+  </link>
+  <joint name="camera_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="camera_link"/>
+    <origin xyz="${base_radius - 0.010} 0.0 0.010" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 相机光学坐标系（Z 向前，X 向右，Y 向下）-->
+  <link name="camera_optical_frame"/>
+  <joint name="camera_optical_joint" type="fixed">
+    <parent link="camera_link"/>
+    <child link="camera_optical_frame"/>
+    <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}"/>
+  </joint>
+
+</robot>
