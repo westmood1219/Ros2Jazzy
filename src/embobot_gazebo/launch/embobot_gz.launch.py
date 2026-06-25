@@ -58,7 +58,6 @@ def generate_launch_description():
     )
 
     # ③ 生成 EmboBot（从 /robot_description 话题读取 URDF）
-    #    TimerAction 延迟 3 秒等待 Gazebo 初始化完成
     spawn_robot = TimerAction(
         period=3.0,
         actions=[
@@ -71,7 +70,7 @@ def generate_launch_description():
                     '-topic', '/robot_description',
                     '-x', '0.0',
                     '-y', '0.0',
-                    '-z', '0.05',    # 略微离地，防止初始碰撞
+                    '-z', '0.05',
                     '-R', '0.0',
                     '-P', '0.0',
                     '-Y', '0.0',
@@ -82,20 +81,25 @@ def generate_launch_description():
     )
 
     # ④ ros_gz_bridge（话题桥接）
-    bridge = Node(
-        package='ros_gz_bridge',
-        executable='parameter_bridge',
-        name='ros_gz_bridge',
-        output='screen',
-        parameters=[{
-            'config_file': bridge_config,
-            'use_sim_time': use_sim_time,
-            'qos_overrides./tf.publisher.reliability': 'reliable',
-        }],
+    #    延迟到 robot spawn 之后（t=4s），确保 lidar sensor 等 topic 已就绪
+    bridge = TimerAction(
+        period=4.0,
+        actions=[
+            Node(
+                package='ros_gz_bridge',
+                executable='parameter_bridge',
+                name='ros_gz_bridge',
+                output='screen',
+                parameters=[{
+                    'config_file': bridge_config,
+                    'use_sim_time': use_sim_time,
+                    'qos_overrides./tf.publisher.reliability': 'reliable',
+                }],
+            ),
+        ],
     )
 
     # ⑤ controller_manager（ros2_control）
-    #    再延迟 2 秒，等机器人生成完成
     controller_manager = TimerAction(
         period=5.0,
         actions=[
@@ -113,7 +117,7 @@ def generate_launch_description():
         ],
     )
 
-    # ⑥ 启动控制器（joint_state_broadcaster + diff_drive）
+    # ⑥ 启动控制器
     start_jsb = TimerAction(
         period=7.0,
         actions=[
@@ -139,6 +143,8 @@ def generate_launch_description():
                     'diff_drive_controller',
                     '--controller-manager', '/controller_manager',
                     '--controller-manager-timeout', '20',
+                    # 显式传递参数文件，Jazzy 不会自动从 controller_manager 转发
+                    '--param-file', ctrl_config,
                 ],
                 output='screen',
             ),
