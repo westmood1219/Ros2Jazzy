@@ -23,7 +23,7 @@
     <xacro:cylinder_inertia m="${base_mass}" r="${base_radius}" h="${base_height}"/>
   </link>
 
-  <!-- 万向轮 -->
+  <!-- 前万向轮 -->
   <link name="caster_link">
     <visual>
       <geometry><sphere radius="${caster_radius}"/></geometry>
@@ -37,7 +37,24 @@
   <joint name="caster_joint" type="fixed">
     <parent link="base_link"/>
     <child link="caster_link"/>
-    <origin xyz="${caster_x} 0.0 ${-(base_height/2 - caster_radius)}" rpy="0 0 0"/>
+    <origin xyz="${caster_x} 0.0 ${caster_radius - (base_height/2 + wheel_radius)}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- 后万向轮：与前万向轮形成前后支撑，减少加减速时车体俯仰 -->
+  <link name="rear_caster_link">
+    <visual>
+      <geometry><sphere radius="${caster_radius}"/></geometry>
+      <material name="light_gray"/>
+    </visual>
+    <collision>
+      <geometry><sphere radius="${caster_radius}"/></geometry>
+    </collision>
+    <xacro:sphere_inertia m="0.05" r="${caster_radius}"/>
+  </link>
+  <joint name="rear_caster_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="rear_caster_link"/>
+    <origin xyz="${-caster_x} 0.0 ${caster_radius - (base_height/2 + wheel_radius)}" rpy="0 0 0"/>
   </joint>
 
 </robot>

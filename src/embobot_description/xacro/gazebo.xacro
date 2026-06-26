@@ -21,6 +21,11 @@
     <mu2>0.001</mu2>
     <material>Gazebo/Grey</material>
   </gazebo>
+  <gazebo reference="rear_caster_link">
+    <mu1>0.001</mu1>
+    <mu2>0.001</mu2>
+    <material>Gazebo/Grey</material>
+  </gazebo>
 
   <!-- ③  驱动轮摩擦力（较大，保证抓地力）-->
   <gazebo reference="left_wheel_link">
