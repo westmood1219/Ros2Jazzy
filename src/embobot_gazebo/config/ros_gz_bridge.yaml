@@ -7,19 +7,25 @@
   gz_type_name: gz.msgs.Twist
   direction: ROS_TO_GZ
 
-# /odom 和 /tf 由 diff_drive_controller / robot_state_publisher 发布。
-# 不从 Gazebo bridge 透传，避免 RViz 在两套 TF 源之间来回切换导致状态闪烁。
-# - ros_topic_name: /odom
-#   gz_topic_name: /model/embobot/odometry
-#   ros_type_name: nav_msgs/msg/Odometry
-#   gz_type_name: gz.msgs.Odometry
-#   direction: GZ_TO_ROS
-#
-# - ros_topic_name: /tf
-#   gz_topic_name: /model/embobot/tf
-#   ros_type_name: tf2_msgs/msg/TFMessage
-#   gz_type_name: gz.msgs.Pose_V
-#   direction: GZ_TO_ROS
+- ros_topic_name: /odom
+  gz_topic_name: /model/embobot/odometry
+  ros_type_name: nav_msgs/msg/Odometry
+  gz_type_name: gz.msgs.Odometry
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /tf
+  gz_topic_name: /model/embobot/tf
+  ros_type_name: tf2_msgs/msg/TFMessage
+  gz_type_name: gz.msgs.Pose_V
+  direction: GZ_TO_ROS
+
+# Gazebo 原生 JointStatePublisher -> ROS /joint_states
+# robot_state_publisher 订阅这个话题后，才能发布 left/right_wheel_link 的 TF。
+- ros_topic_name: /joint_states
+  gz_topic_name: /world/embobot_world/model/embobot/joint_state
+  ros_type_name: sensor_msgs/msg/JointState
+  gz_type_name: gz.msgs.Model
+  direction: GZ_TO_ROS
 
 # lidar sensor: <topic>/scan</topic> → Gazebo 绝对话题 /scan
 - ros_topic_name: /scan

@@ -132,11 +132,31 @@
     </sensor>
   </gazebo>
 
-  <!-- ⑤  gz_ros2_control 插件（Gazebo Harmonic 必须，替代旧的 libgazebo_ros2_control.so）-->
+  <!-- ⑤ Gazebo 原生差速驱动插件：直接订阅 Gazebo /model/embobot/cmd_vel -->
   <gazebo>
-    <plugin filename="gz_ros2_control-system"
-            name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-      <parameters>$(find embobot_description)/config/embobot_controllers.yaml</parameters>
+    <plugin filename="gz-sim-diff-drive-system"
+            name="gz::sim::systems::DiffDrive">
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+      <wheel_separation>0.160</wheel_separation>
+      <wheel_radius>0.033</wheel_radius>
+      <odom_publish_frequency>50</odom_publish_frequency>
+      <topic>/model/embobot/cmd_vel</topic>
+      <odom_topic>/model/embobot/odometry</odom_topic>
+      <tf_topic>/model/embobot/tf</tf_topic>
+      <frame_id>odom</frame_id>
+      <child_frame_id>base_footprint</child_frame_id>
+      <max_linear_velocity>0.5</max_linear_velocity>
+      <min_linear_velocity>-0.5</min_linear_velocity>
+      <max_angular_velocity>2.0</max_angular_velocity>
+      <min_angular_velocity>-2.0</min_angular_velocity>
+    </plugin>
+
+    <!-- ⑥ 发布 Gazebo 里的轮关节状态，供 ROS robot_state_publisher 生成轮子 TF -->
+    <plugin filename="gz-sim-joint-state-publisher-system"
+            name="gz::sim::systems::JointStatePublisher">
+      <joint_name>left_wheel_joint</joint_name>
+      <joint_name>right_wheel_joint</joint_name>
     </plugin>
   </gazebo>
 

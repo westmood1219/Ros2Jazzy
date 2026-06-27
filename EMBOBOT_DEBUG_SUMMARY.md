@@ -255,6 +255,63 @@ caster 底部世界高度 = 0.015 - 0.015 = 0.000m
 
 ---
 
+### 问题 9：切换 Gazebo 原生 DiffDrive 后轮子 TF 缺失
+
+**症状**:
+- 改用 Gazebo 原生 `gz-sim-diff-drive-system` 后，RViz 报 `No transform from [left_wheel_link] to [odom]` 和 `No transform from [right_wheel_link] to [odom]`
+- `/joint_states` 话题存在，但 `ros2 topic info /joint_states -v` 显示 `Publisher count: 0`
+
+**根因**:
+原来的 `joint_state_broadcaster` 属于 `ros2_control` 控制链。切到 Gazebo 原生 DiffDrive 后，launch 中不再启动 `controller_manager` 和 `joint_state_broadcaster`，因此没有任何节点发布左右轮连续关节状态。
+
+`robot_state_publisher` 只能直接发布固定关节的静态 TF；对于 `left_wheel_joint` / `right_wheel_joint` 这种 `continuous` 关节，它必须收到 `/joint_states` 后才能生成：
+
+```text
+base_link -> left_wheel_link
+base_link -> right_wheel_link
+```
+
+**修复**:
+在 Gazebo 模型中加入原生关节状态发布插件：
+
+```xml
+<plugin filename="gz-sim-joint-state-publisher-system"
+        name="gz::sim::systems::JointStatePublisher">
+  <joint_name>left_wheel_joint</joint_name>
+  <joint_name>right_wheel_joint</joint_name>
+</plugin>
+```
+
+并通过 `ros_gz_bridge` 转成 ROS `/joint_states`：
+
+```yaml
+- ros_topic_name: /joint_states
+  gz_topic_name: /world/embobot_world/model/embobot/joint_state
+  ros_type_name: sensor_msgs/msg/JointState
+  gz_type_name: gz.msgs.Model
+  direction: GZ_TO_ROS
+```
+
+当前试验链中，`/odom` 和 `odom -> base_footprint` TF 由 Gazebo 原生 DiffDrive 发布；轮子 TF 由 `Gazebo JointStatePublisher -> ros_gz_bridge -> /joint_states -> robot_state_publisher` 生成。
+
+另外，`livox_frame` 和 `body` 不属于当前 `embobot_description` 的 frame。当前机器人使用：
+
+```text
+base_footprint
+base_link
+lidar_link
+camera_link
+camera_optical_frame
+left_wheel_link
+right_wheel_link
+caster_link
+rear_caster_link
+```
+
+如果 RViz 仍显示 `livox_frame` 或 `body` 缺 TF，优先检查 RViz Display 是否选了旧话题/旧 frame，或是否有残留节点发布旧数据。
+
+---
+
 ## 最终结果
 
 ### TF 树
@@ -280,19 +337,24 @@ SCAN 最大值:          7.85m     ← 远离另一面墙
 
 ### 系统架构
 ```
-teleop_twist_keyboard → /cmd_vel (Twist)
-                            ↓
-                     twist_stamper
-                            ↓
-              /diff_drive_controller/cmd_vel (TwistStamped)
-                            ↓
-                   diff_drive_controller
-                  ↙                    ↘
-    /diff_drive_controller/odom      gz_ros2_control → Gazebo
-              ↓
-         twist_stamper
-              ↓
-           /odom
+teleop_twist_keyboard / demo script
+        ↓
+ROS /cmd_vel (Twist)
+        ↓ ros_gz_bridge
+Gazebo /model/embobot/cmd_vel
+        ↓
+gz-sim-diff-drive-system
+        ├── Gazebo /model/embobot/odometry -> ros_gz_bridge -> ROS /odom
+        ├── Gazebo /model/embobot/tf       -> ros_gz_bridge -> ROS /tf (odom→base_footprint)
+        └── wheel joints move in Gazebo
+                  ↓
+         gz-sim-joint-state-publisher-system
+                  ↓
+Gazebo /world/embobot_world/model/embobot/joint_state
+                  ↓ ros_gz_bridge
+ROS /joint_states
+                  ↓
+robot_state_publisher -> wheel / sensor / body TF
 ```
 
 ---
@@ -323,3 +385,4 @@ ff1944d fix: 车体高度修正+轮子位置修正实现Gazebo内真实移动
 5. **Gazebo sensors**：必须加载 `gz-sim-sensors-system` 插件 sensor 才工作
 6. **bridge 时序**：`parameter_bridge` 需在 robot spawn 后启动，否则订阅不到 Gazebo topic
 7. **假障碍不一定是雷达错**：运动时出现随加减速翻转的近距离“墙”，优先检查车体俯仰、接地点和传感器扫描平面是否打到地面；两轮差速底盘要让支撑点覆盖质心前后方向
+8. **原生 DiffDrive 需要补 `/joint_states`**：不用 `ros2_control` 后，轮子 TF 不会自动出现，必须用 Gazebo `JointStatePublisher` + bridge 补给 `robot_state_publisher`
