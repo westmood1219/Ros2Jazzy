@@ -3,6 +3,7 @@
 
   <!-- 命令行参数：ros2 launch ... use_sim:=true/false -->
   <xacro:arg name="use_sim" default="true"/>
+  <xacro:arg name="use_mock" default="false"/>
 
   <!-- 颜色材质定义（URDF 部分用，Gazebo 用自己的） -->
   <material name="dark_gray"><color rgba="0.15 0.15 0.15 1.0"/></material>
@@ -16,10 +17,12 @@
   <xacro:include filename="$(find embobot_description)/xacro/wheels.xacro"/>
   <xacro:include filename="$(find embobot_description)/xacro/sensors.xacro"/>
 
-  <!-- Gazebo 和 ros2_control 标签只在仿真时才需要 -->
+  <!-- Gazebo 标签只在仿真时需要 -->
   <xacro:if value="$(arg use_sim)">
     <xacro:include filename="$(find embobot_description)/xacro/gazebo.xacro"/>
-    <xacro:include filename="$(find embobot_description)/xacro/ros2_control.xacro"/>
   </xacro:if>
+
+  <!-- ros2_control 在 Gazebo、mock、真实硬件三种模式下都需要 -->
+  <xacro:include filename="$(find embobot_description)/xacro/ros2_control.xacro"/>
 
 </robot>

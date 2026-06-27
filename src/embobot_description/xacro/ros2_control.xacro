@@ -1,36 +1,49 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+  <xacro:arg name="use_sim" default="true"/>
+  <xacro:arg name="use_mock" default="false"/>
 
   <!--
-    ros2_control 标签定义"硬件接口"：
-    - 在仿真中：hardware plugin 是 GazeboSimSystem，直接读写 Gazebo 关节状态
-    - 在真实硬件中：hardware plugin 换成对应的驱动（如 Arduino、ROS 2 serial 驱动）
-    接口类型不变，只换 plugin 名，是 Sim2Real 移植的关键设计
+    ros2_control 硬件接口选择：
+    - use_mock=true：离线 mock，ros2_control_node 可不依赖 Gazebo 启动
+    - use_sim=true：Gazebo ros2_control 插件
+    - 其它：真实硬件驱动
   -->
   <ros2_control name="EmboBot" type="system">
     <hardware>
-      <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+      <xacro:if value="$(arg use_mock)">
+        <plugin>mock_components/GenericSystem</plugin>
+      </xacro:if>
+
+      <xacro:unless value="$(arg use_mock)">
+        <xacro:if value="$(arg use_sim)">
+          <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </xacro:if>
+
+        <xacro:unless value="$(arg use_sim)">
+          <plugin>embobot_hardware/EmboBotSystem</plugin>
+          <param name="port">/dev/ttyUSB0</param>
+          <param name="baud_rate">115200</param>
+        </xacro:unless>
+      </xacro:unless>
     </hardware>
 
-    <!-- 左轮关节：只有速度接口（差速驱动不需要位置控制）-->
     <joint name="left_wheel_joint">
       <command_interface name="velocity">
-        <param name="min">-10</param>
-        <param name="max"> 10</param>
+        <param name="min">-15.15</param>
+        <param name="max">15.15</param>
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
 
-    <!-- 右轮关节 -->
     <joint name="right_wheel_joint">
       <command_interface name="velocity">
-        <param name="min">-10</param>
-        <param name="max"> 10</param>
+        <param name="min">-15.15</param>
+        <param name="max">15.15</param>
       </command_interface>
       <state_interface name="position"/>
       <state_interface name="velocity"/>
     </joint>
   </ros2_control>
-
 </robot>
