@@ -10,6 +10,8 @@ controller_manager:
       type: diff_drive_controller/DiffDriveController
       ros__parameters:
         cmd_vel_topic: /cmd_vel
+        # cmd_vel 超时：超过此时间无新指令则自动停止
+        cmd_vel_timeout: 0.5   # 秒，防止通信中断后机器人失控
       # 车轮名称
       left_wheel_names:  ['left_wheel_joint']
       right_wheel_names: ['right_wheel_joint']
@@ -31,6 +33,7 @@ controller_manager:
       linear.x.min_velocity: -0.5
       angular.z.max_velocity:  2.0
       angular.z.min_velocity: -2.0
+
 
     # 关节状态广播器（发布 /joint_states）
     joint_state_broadcaster:

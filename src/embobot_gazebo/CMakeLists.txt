@@ -28,6 +28,7 @@ install(DIRECTORY
   config
   rviz
   resource
+  scripts
   DESTINATION share/${PROJECT_NAME}
 )
 ament_package()

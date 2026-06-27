@@ -47,6 +47,8 @@
       <always_on>1</always_on>
       <topic>/scan</topic>
       <update_rate>10</update_rate>
+      <gz_frame_id>lidar_link</gz_frame_id>
+      <visualize>true</visualize>
       <lidar>
         <scan>
           <horizontal>
@@ -61,8 +63,72 @@
           <max>10.0</max>
           <resolution>0.015</resolution>
         </range>
+        <!-- 高斯噪声：模拟真实激光雷达的测量误差 -->
+        <!-- mean=0 无系统偏差，stddev=0.01 约 1cm 标准差 -->
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.01</stddev>
+        </noise>
       </lidar>
-      <gz_frame_id>lidar_link</gz_frame_id>
+    </sensor>
+  </gazebo>
+
+  <gazebo reference="camera_link">
+    <material>Gazebo/Blue</material>
+    <sensor name="rgbd_camera_sensor" type="rgbd_camera">
+
+      <topic>/camera</topic>
+      <update_rate>15</update_rate>
+
+      <!--
+        gz_frame_id 用 camera_optical_frame（不是 camera_link！）
+        原因：图像坐标系约定 Z 向前，需要经过旋转变换的光学帧
+        这样 RViz2 中 Image 显示才方向正确
+      -->
+      <gz_frame_id>camera_optical_frame</gz_frame_id>
+
+      <camera name="rgbd_camera">
+        <horizontal_fov>1.3962634</horizontal_fov>  <!-- 80° 视角 -->
+
+        <image>
+          <width>640</width>
+          <height>480</height>
+          <format>R8G8B8</format>  <!-- 24位 RGB -->
+        </image>
+
+        <clip>
+          <near>0.05</near>   <!-- 近裁剪面 5cm -->
+          <far>15.0</far>     <!-- 远裁剪面 15m -->
+        </clip>
+
+        <!-- 镜头畸变（0=无畸变，模拟理想相机） -->
+        <distortion>
+          <k1>0.0</k1>
+          <k2>0.0</k2>
+          <k3>0.0</k3>
+          <p1>0.0</p1>
+          <p2>0.0</p2>
+          <center>0.5 0.5</center>
+        </distortion>
+
+        <!-- 深度图参数 -->
+        <depth_camera>
+          <output>depths</output>   <!-- 发布深度图 -->
+        </depth_camera>
+
+        <!-- 图像噪声（模拟传感器噪点） -->
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.007</stddev>
+        </noise>
+
+      </camera>
+
+      <!-- 同时发布 camera_info（内参） -->
+      <camera_info_topic>/camera/camera_info</camera_info_topic>
+      <visualize>true</visualize>
     </sensor>
   </gazebo>
 

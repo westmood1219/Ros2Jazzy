@@ -3,14 +3,7 @@ Panels:
     Help Height: 70
     Name: Displays
     Property Tree Widget:
-      Expanded:
-        - /Robot model1
-        - /Robot model1/Status1
-        - /Robot model1/Links1
-        - /TF1
-        - /TF1/Status1
-        - /Laser scan1
-        - /Laser scan1/Status1
+      Expanded: ~
       Splitter Ratio: 0.5
     Tree Height: 310
 Visualization Manager:
@@ -29,7 +22,7 @@ Visualization Manager:
         Value: /robot_description
       Enabled: true
       Links:
-        All Links Enabled: false
+        All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
@@ -42,7 +35,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: false
+          Value: true
         camera_link:
           Alpha: 1
           Show Axes: false
@@ -63,6 +56,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         lidar_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rear_caster_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -103,6 +101,8 @@ Visualization Manager:
           Value: true
         odom:
           Value: true
+        rear_caster_link:
+          Value: true
         right_wheel_link:
           Value: true
       Marker Scale: 0.30000001192092896
@@ -123,6 +123,8 @@ Visualization Manager:
                 {}
               lidar_link:
                 {}
+              rear_caster_link:
+                {}
               right_wheel_link:
                 {}
       Update Interval: 0
@@ -137,16 +139,16 @@ Visualization Manager:
       Channel Name: intensity
       Class: rviz_default_plugins/LaserScan
       Color: 255; 50; 50
-      Color Transformer: ""
+      Color Transformer: Intensity
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 4096
+      Max Intensity: 0
       Min Color: 0; 0; 0
       Min Intensity: 0
       Name: Laser scan
-      Position Transformer: ""
+      Position Transformer: XYZ
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.03999999910593033
@@ -200,6 +202,39 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /odom
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz_default_plugins/PointCloud2
+      Color: 255; 255; 255
+      Color Transformer: RGB8
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: PointCloud2
+      Position Transformer: XYZ
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.009999999776482582
+      Style: Flat Squares
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Best Effort
+        Value: /camera/depth/points
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -209,6 +244,8 @@ Visualization Manager:
   Tools:
     - Class: rviz_default_plugins/Interact
       Hide Inactive Objects: true
+    - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
   Transformation:
     Current:
       Class: rviz_default_plugins/TF
@@ -216,25 +253,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 0.4651404321193695
+      Distance: 13.961722373962402
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: -0.016117282211780548
+        Y: 0.00232801865786314
+        Z: 1.5807896852493286
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5103984475135803
+      Pitch: 0.4303981363773346
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz_default_plugins)
-      Yaw: 0.6953982710838318
+      Yaw: 1.855398178100586
     Saved: ~
 Window Geometry:
   Displays:

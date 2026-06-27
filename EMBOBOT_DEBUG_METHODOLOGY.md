@@ -232,7 +232,84 @@ link 世界高度 + joint z - collision 半径/半高 = 接触件底部高度
 
 ---
 
-## 七、核心命令速查
+## 七、RViz 疯狂闪烁：先查残留进程和重复节点
+
+如果 RViz 的显示项在 `Status: Ok` 和 `Error` 之间快速切换，不要一上来就改 RViz 配置。先怀疑：**旧的 launch 没关干净，ROS graph 里叠了多套同名节点或多套 TF 发布者**。
+
+典型症状：
+
+- RViz 的 TF、LaserScan、PointCloud2 状态来回闪
+- `ros2 node list` 里同名节点重复出现，例如多个 `/controller_manager`、`/diff_drive_controller`
+- `/tf` 有多个同名 publisher
+- 系统里残留多个 `gz sim server`
+
+排查顺序：
+
+1. 看 ROS graph 有没有重复节点：
+
+```bash
+ros2 node list
+```
+
+正常一次 launch 大概只应该有一套 controller：
+
+```text
+/controller_manager
+/diff_drive_controller
+/joint_state_broadcaster
+```
+
+如果看到这些节点重复多次，就说明旧进程或旧 DDS graph 没清干净。
+
+2. 看 `/tf` 是否有重复发布者：
+
+```bash
+ros2 topic info /tf -v
+```
+
+正常情况下，`odom -> base_footprint` 主要由一套 `diff_drive_controller` 发布。如果同名 `diff_drive_controller` publisher 出现多份，RViz 会在多套 TF 数据之间摇摆。
+
+3. 看系统进程里是否有残留 Gazebo/ROS 进程：
+
+```bash
+pgrep -af "gz sim|parameter_bridge|controller_manager|rviz2|robot_state_publisher|twist_stamper"
+```
+
+如果出现多行 `gz sim server`，例如：
+
+```text
+242937 gz sim server
+246746 gz sim server
+247434 gz sim server
+```
+
+就说明仿真 server 没关干净。
+
+4. 清理残留进程和 ROS daemon 缓存：
+
+```bash
+pkill -f "gz sim server"
+ros2 daemon stop
+```
+
+清完后再次确认：
+
+```bash
+pgrep -af "gz sim server"
+ros2 node list
+```
+
+如果 `pgrep` 没输出，`ros2 node list` 只剩 `/rosout`、`/parameter_events` 或为空，说明环境基本干净，可以重新 launch。
+
+5. 从配置上减少复发概率：
+
+- 不要同时让 Gazebo bridge 和 `diff_drive_controller` 发布 `/tf` / `/odom`
+- 传感器类显示项如 PointCloud2 优先使用 `Best Effort` QoS
+- 每次重新 launch 前，确认上一轮终端已经完整退出
+
+---
+
+## 八、核心命令速查
 
 ```bash
 # TF
@@ -267,3 +344,5 @@ ros2 run controller_manager spawner <name>  # 加载控制器
 
 # 杂项
 ros2 daemon stop                         # 清缓存
+pgrep -af "gz sim|parameter_bridge|controller_manager|rviz2|robot_state_publisher|twist_stamper"
+pkill -f "gz sim server"                 # 清理残留 Gazebo server

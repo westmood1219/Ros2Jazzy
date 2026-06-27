@@ -81,7 +81,7 @@
         <collision name="col"><geometry><box><size>10 0.2 2</size></box></geometry></collision>
         <visual name="vis">
           <geometry><box><size>10 0.2 2</size></box></geometry>
-          <material><ambient>0.5 0.5 0.9 1</ambient></material>
+          <material><ambient>0.5 0.5 0.9 1</ambient><diffuse>0.5 0.5 0.9 1</diffuse></material>
         </visual>
       </link>
     </model>
@@ -92,7 +92,7 @@
         <collision name="col"><geometry><box><size>10 0.2 2</size></box></geometry></collision>
         <visual name="vis">
           <geometry><box><size>10 0.2 2</size></box></geometry>
-          <material><ambient>0.5 0.5 0.9 1</ambient></material>
+          <material><ambient>0.5 0.5 0.9 1</ambient><diffuse>0.5 0.5 0.9 1</diffuse></material>
         </visual>
       </link>
     </model>
@@ -103,7 +103,7 @@
         <collision name="col"><geometry><box><size>10 0.2 2</size></box></geometry></collision>
         <visual name="vis">
           <geometry><box><size>10 0.2 2</size></box></geometry>
-          <material><ambient>0.5 0.9 0.5 1</ambient></material>
+          <material><ambient>0.5 0.9 0.5 1</ambient><diffuse>0.5 0.9 0.5 1</diffuse></material>
         </visual>
       </link>
     </model>
@@ -114,7 +114,7 @@
         <collision name="col"><geometry><box><size>10 0.2 2</size></box></geometry></collision>
         <visual name="vis">
           <geometry><box><size>10 0.2 2</size></box></geometry>
-          <material><ambient>0.5 0.9 0.5 1</ambient></material>
+          <material><ambient>0.5 0.9 0.5 1</ambient><diffuse>0.5 0.9 0.5 1</diffuse></material>
         </visual>
       </link>
     </model>

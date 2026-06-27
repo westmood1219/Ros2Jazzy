@@ -7,17 +7,19 @@
   gz_type_name: gz.msgs.Twist
   direction: ROS_TO_GZ
 
-- ros_topic_name: /odom
-  gz_topic_name: /model/embobot/odometry
-  ros_type_name: nav_msgs/msg/Odometry
-  gz_type_name: gz.msgs.Odometry
-  direction: GZ_TO_ROS
-
-- ros_topic_name: /tf
-  gz_topic_name: /model/embobot/tf
-  ros_type_name: tf2_msgs/msg/TFMessage
-  gz_type_name: gz.msgs.Pose_V
-  direction: GZ_TO_ROS
+# /odom 和 /tf 由 diff_drive_controller / robot_state_publisher 发布。
+# 不从 Gazebo bridge 透传，避免 RViz 在两套 TF 源之间来回切换导致状态闪烁。
+# - ros_topic_name: /odom
+#   gz_topic_name: /model/embobot/odometry
+#   ros_type_name: nav_msgs/msg/Odometry
+#   gz_type_name: gz.msgs.Odometry
+#   direction: GZ_TO_ROS
+#
+# - ros_topic_name: /tf
+#   gz_topic_name: /model/embobot/tf
+#   ros_type_name: tf2_msgs/msg/TFMessage
+#   gz_type_name: gz.msgs.Pose_V
+#   direction: GZ_TO_ROS
 
 # lidar sensor: <topic>/scan</topic> → Gazebo 绝对话题 /scan
 - ros_topic_name: /scan
@@ -31,4 +33,31 @@
   gz_topic_name: /clock
   ros_type_name: rosgraph_msgs/msg/Clock
   gz_type_name: gz.msgs.Clock
+  direction: GZ_TO_ROS
+
+# ── 新增：RGB 相机 ──────────────────────────────────
+- ros_topic_name: /camera/image_raw
+  gz_topic_name: /camera/image
+  ros_type_name: sensor_msgs/msg/Image
+  gz_type_name: gz.msgs.Image
+  direction: GZ_TO_ROS
+
+- ros_topic_name: /camera/camera_info
+  gz_topic_name: /camera/camera_info
+  ros_type_name: sensor_msgs/msg/CameraInfo
+  gz_type_name: gz.msgs.CameraInfo
+  direction: GZ_TO_ROS
+
+# 深度图
+- ros_topic_name: /camera/depth/image_raw
+  gz_topic_name: /camera/depth_image
+  ros_type_name: sensor_msgs/msg/Image
+  gz_type_name: gz.msgs.Image
+  direction: GZ_TO_ROS
+
+# 点云（xyz + rgb）
+- ros_topic_name: /camera/depth/points
+  gz_topic_name: /camera/points
+  ros_type_name: sensor_msgs/msg/PointCloud2
+  gz_type_name: gz.msgs.PointCloudPacked
   direction: GZ_TO_ROS
